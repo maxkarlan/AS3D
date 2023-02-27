@@ -67,8 +67,12 @@ camera.lookAt(new THREE.Vector3(0, 0, 0)); // look at the center of the sphere
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-    
+// Create a new point light
+var pointLight = new THREE.PointLight(0xffffff, 1, 100);
+pointLight.position.set(0, 10, 10);
 
+// Add the point light to the scene
+scene.add(pointLight);
 
 // Create the sphere geometry and material
 const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
@@ -98,6 +102,34 @@ const smallestSphereGeometry = new THREE.SphereGeometry(0.25, 32, 32);
     
           // Add sphere to scene
       scene.add(smallestSphereMesh);
+    
+// Create 50 Icosahedrons that orbit around the middle sphere
+const numIcosahedrons = 50;
+const icosahedronGeometry = new THREE.IcosahedronGeometry(0.05, 1);
+const icosahedronMaterial = new THREE.MeshPhongMaterial({ color: 0xff00ff, shininess: 100 });
+const icosahedrons = [];
+for (let i = 0; i < numIcosahedrons; i++) {
+  const icosahedronMesh = new THREE.Mesh(icosahedronGeometry, icosahedronMaterial);
+  // Calculate a random longitude and latitude for the Icosahedron's orbit
+  const longitude = Math.random() * Math.PI * 2;
+  const latitude = Math.random() * Math.PI * 2;
+  const radius = .5;
+  // Calculate the position of the Icosahedron on its orbit
+  const x = radius * Math.sin(latitude) * Math.cos(longitude);
+  const y = radius * Math.sin(latitude) * Math.sin(longitude);
+  const z = radius * Math.cos(latitude);
+  icosahedronMesh.position.set(x, y, z);
+  scene.add(icosahedronMesh);
+  // Store the Icosahedron's initial position, longitude, latitude, and radius
+  icosahedrons.push({
+    mesh: icosahedronMesh,
+    initialPosition: icosahedronMesh.position.clone(),
+    longitude: longitude,
+    latitude: latitude,
+    radius: radius,
+  });
+}
+    
   
 // Add longitude lines to the sphere
 for (let i = 0; i < 64; i++) {
@@ -205,6 +237,9 @@ function updateCubes() {
 let xSpeed = 0;
 let zSpeed = 0;
 const movementSpeed = 0.1;
+    
+// Create a new variable to keep track of the mouse position
+var mouse = new THREE.Vector2();
 
 // Add an event listener for keydown events
 document.addEventListener('keydown', (event) => {
@@ -241,6 +276,19 @@ document.addEventListener('keyup', (event) => {
 // Render the scene and update the cube positions on each frame
 function render() {
   updateCubes();
+   // Update the positions of the Icosahedrons
+  for (let i = 0; i < numIcosahedrons; i++) {
+    const icosahedron = icosahedrons[i];
+    // Increment the Icosahedron's longitude and latitude angles
+    icosahedron.longitude += 0.0001 * i;
+    icosahedron.latitude += 0.0001 * (i + 1);
+    // Calculate the new position of the Icosahedron on its orbit
+    const x = icosahedron.radius * Math.sin(icosahedron.latitude) * Math.cos(icosahedron.longitude);
+    const y = icosahedron.radius * Math.sin(icosahedron.latitude) * Math.sin(icosahedron.longitude);
+    const z = icosahedron.radius * Math.cos(icosahedron.latitude);
+    // Update the Icosahedron's position
+    icosahedron.mesh.position.set(x, y, z);
+  }
   renderer.render(scene, camera);
 }
 
