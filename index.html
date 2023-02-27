@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Transparent Sphere with Cubes - Three.js</title>
+    <script src="https://threejs.org/build/three.min.js"></script>
+  </head>
+<body>
+  <script>
+  // Create the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5;
+const renderer = new THREE.WebGLRenderer({ alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create a transparent sphere geometry and material
+const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
+const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+scene.add(sphereMesh);
+
+// Create an array of cube geometries
+const cubeGeometries = Array.from({ length: 50 }, () => new THREE.BoxGeometry(0.1, 0.1, 0.1));
+
+// Create a material for each cube with a random color and transparency
+const cubeMaterials = cubeGeometries.map(() => {
+  const color = new THREE.Color(Math.random(), Math.random(), Math.random());
+  return new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7 });
+});
+
+// Create a mesh for each cube and add it to the scene
+const cubeMeshes = cubeGeometries.map((geometry, index) => {
+  const mesh = new THREE.Mesh(geometry, cubeMaterials[index]);
+  scene.add(mesh);
+  return mesh;
+});
+
+// Set the position of each cube mesh to a random point on the surface of the sphere
+cubeMeshes.forEach((mesh) => {
+  const position = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+  position.normalize();
+  position.multiplyScalar(2);
+  mesh.position.copy(position);
+});
+
+// Animate the cubes by updating their positions on each frame
+function animate() {
+  requestAnimationFrame(animate);
+  const time = Date.now() * 0.001;
+  cubeMeshes.forEach((mesh, index) => {
+    const radius = 2;
+    const speed = Math.random() * 0.2 + 0.1; // random speed between 0.1 and 0.3
+    const angle = time * speed + index * 0.1;
+    const x = Math.sin(angle) * radius;
+    const y = Math.cos(angle) * radius;
+    const z = Math.random() * 2 - 1; // random z position between -1 and 1
+    mesh.position.set(x, y, z);
+  });
+  renderer.render(scene, camera);
+}
+animate();
+
+  </script>
+</body>
+</html>
