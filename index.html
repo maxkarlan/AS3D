@@ -195,7 +195,7 @@ for (let i = 0; i < 50; i++) {
   const velocityX = Math.sin(velocityTheta) * Math.cos(velocityPhi);
   const velocityY = Math.sin(velocityPhi);
   const velocityZ = Math.cos(velocityTheta) * Math.cos(velocityPhi);
-  const velocity = new THREE.Vector3(velocityX, velocityY, velocityZ).normalize().multiplyScalar(0.03);
+  const velocity = new THREE.Vector3(velocityX, velocityY, velocityZ).normalize().multiplyScalar(0.015);
   cubeMesh.userData.velocity = velocity;
   
   cubes.push(cubeMesh);
