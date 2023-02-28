@@ -91,9 +91,40 @@ scene.add(sphereMesh);
     
 // Create the inner sphere geometry and material
 const innerSphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-const innerSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xc8a2c8, transparent: true, opacity:0.4, wireframe: true });
+const innerSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xc8a2c8, transparent: true, opacity: .5, wireframe: true});
 const innerSphereMesh = new THREE.Mesh(innerSphereGeometry, innerSphereMaterial);
 scene.add(innerSphereMesh);
+    
+const hairGeometry = new THREE.BufferGeometry();
+const hairCount = 10000;
+      const hairPositions = new Float32Array(hairCount * 3);
+      const hairNormals = new Float32Array(hairCount * 3);
+      const hairColors = new Float32Array(hairCount * 3);
+
+      for (let i = 0; i < hairCount; i++) {
+        const i3 = i * 3;
+        hairPositions[i3] = (Math.random() * 2 - 1) * 2;
+        hairPositions[i3 + 1] = (Math.random() * 2 - 1) * 2;
+        hairPositions[i3 + 2] = (Math.random() * 2 - 1) * 2;
+        hairNormals[i3] = 0;
+        hairNormals[i3 + 1] = 0;
+        hairNormals[i3 + 2] = 0;
+        hairColors[i3] = 1;
+        hairColors[i3 + 1] = 1;
+        hairColors[i3 + 2] = 1;
+      }
+
+      hairGeometry.setAttribute('position', new THREE.BufferAttribute(hairPositions, 3));
+      hairGeometry.setAttribute('normal', new THREE.BufferAttribute(hairNormals, 3));
+      hairGeometry.setAttribute('color', new THREE.BufferAttribute(hairColors, 3));
+
+      const hairMaterial = new THREE.PointsMaterial({
+        size: 0.003,
+        vertexColors: true
+      });
+
+      const hairParticles = new THREE.Points(hairGeometry, hairMaterial);
+      innerSphereMesh.add(hairParticles);   
     
 // Create the third, smallest sphere geometry and material
 const smallestSphereGeometry = new THREE.SphereGeometry(0.25, 32, 32);
