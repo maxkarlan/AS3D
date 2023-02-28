@@ -70,12 +70,18 @@ camera.lookAt(new THREE.Vector3(5, 0, 0)); // look at the center of the sphere
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
-// Create a new point light
-var pointLight = new THREE.PointLight(0xffffff, 1, 100);
-pointLight.position.set(0, 10, 10);
+// Create a light blue color for the sky
+const skyColor = new THREE.Color(0x87cefa);
 
-// Add the point light to the scene
-scene.add(pointLight);
+// Create a dark purple color for the ground
+const groundColor = new THREE.Color(0x2f144e);
+
+// Create a hemisphere light with the sky and ground colors
+const hemisphereLight = new THREE.HemisphereLight(skyColor, groundColor, 1);
+
+// Add the hemisphere light to the scene
+scene.add(hemisphereLight);
+
 
 // Create the sphere geometry and material
 const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
@@ -85,7 +91,7 @@ scene.add(sphereMesh);
     
 // Create the inner sphere geometry and material
 const innerSphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-const innerSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xD4AF37, transparent: true, opacity:0.4, wireframe: true });
+const innerSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xc8a2c8, transparent: true, opacity:0.4, wireframe: true });
 const innerSphereMesh = new THREE.Mesh(innerSphereGeometry, innerSphereMaterial);
 scene.add(innerSphereMesh);
     
