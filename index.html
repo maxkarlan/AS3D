@@ -133,7 +133,6 @@ for (let i = 0; i < numIcosahedrons; i++) {
   });
 }
     
-  
 // Add longitude lines to the sphere
 for (let i = 0; i < 64; i++) {
   const points = [];
@@ -229,17 +228,22 @@ function updateCubes() {
   });
 }
     
-      // Animate the Perlin noise by updating the time uniform in the material
-      function animate() {
-        requestAnimationFrame(animate);
-        perlinMaterial.uniforms.time.value += 0.1;
-        renderer.render(scene, camera);
+// Animate the Perlin noise by updating the time uniform in the material
+function animate() {
+  requestAnimationFrame(animate);
+  perlinMaterial.uniforms.time.value += 0.1;
+  renderer.render(scene, camera);
       }
     
 // Set the initial camera position and movement speed
 let xSpeed = 0;
 let zSpeed = 0;
 const movementSpeed = 0.1;
+    
+// Add collision detection to the scene
+document.addEventListener('collide', function(event) {
+  // event has details about the collision
+});
     
 // Add event listeners to make the camera rotate around the center when the user holds a click and drags the cursor
 let isDragging = false;
@@ -259,8 +263,8 @@ document.addEventListener('mousemove', event => {
 
     const deltaRotationQuaternion = new THREE.Quaternion()
       .setFromEuler(new THREE.Euler(
-        toRadians(deltaMove.y * .05),
-        toRadians(deltaMove.x * .05),
+        toRadians(deltaMove.y * .1),
+        toRadians(deltaMove.x * .1),
         0,
         'XYZ'
       ));
@@ -281,9 +285,34 @@ document.addEventListener('mouseup', event => {
 function toRadians(angle) {
   return angle * (Math.PI / 180);
 }   
+    
+// Define a function to simulate collisions between spheres
+function simulateCollisions() {
+  for (let i = 0; i < spheres.length; i++) {
+    for (let j = i + 1; j < spheres.length; j++) {
+      const sphere1 = spheres[i];
+      const sphere2 = spheres[j];
+      const distance = sphere1.position.distanceTo(sphere2.position);
+      if (distance < 2) {
+        // The spheres are close enough to collide
+        const direction = new THREE.Vector3().subVectors(sphere2.position, sphere1.position).normalize();
+        const v1 = sphere1.velocity.clone().projectOnVector(direction);
+        const v2 = sphere2.velocity.clone().projectOnVector(direction);
+        const u1 = sphere1.velocity.clone().sub(v1).add(v2);
+        const u2 = sphere2.velocity.clone().sub(v2).add(v1);
+        sphere1.velocity.copy(u1);
+        sphere2.velocity.copy(u2);
+        sphere1.position.lerp(sphere1.position.clone().sub(direction), 0.5);
+        sphere2.position.lerp(sphere2.position.clone().add(direction), 0.5);
+      }
+    }
+  }
+}
+
 
 // Render the scene and update the cube positions on each frame
 function render() {
+  
   updateCubes();
    // Update the positions of the Icosahedrons
   for (let i = 0; i < numIcosahedrons; i++) {
