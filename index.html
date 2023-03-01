@@ -3,6 +3,13 @@
   <head>
     <meta charset="utf-8">
     <title>Transparent Sphere with Cubes - Three.js</title>
+    <style>
+        .container {
+            width: 400px;
+            height: 300px;
+            overflow: hidden;
+        }
+    </style>
     <script src="https://threejs.org/build/three.min.js"></script>
     <script src="https://threejs.org/examples/js/vr/WebVR.js"></script>
     <script src="https://threejs.org/examples/js/vr/VREffect.js"></script>
@@ -68,7 +75,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(5, 0, 0); // move camera outside the sphere on one side
 camera.lookAt(new THREE.Vector3(5, 0, 0)); // look at the center of the sphere
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('container').appendChild(renderer.domElement);
 // Create a light blue color for the sky
