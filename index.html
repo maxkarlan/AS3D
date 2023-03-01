@@ -58,6 +58,7 @@
     </script>
   </head>
 <body>
+      <div id="container"></div>
   <script>
 // Import the noisejs library
 // import { Noise } from 'noisejs';    
@@ -69,7 +70,7 @@ camera.position.set(5, 0, 0); // move camera outside the sphere on one side
 camera.lookAt(new THREE.Vector3(5, 0, 0)); // look at the center of the sphere
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+document.getElementById('container').appendChild(renderer.domElement);
 // Create a light blue color for the sky
 const skyColor = new THREE.Color(0x87cefa);
 
@@ -142,6 +143,9 @@ const smallestSphereGeometry = new THREE.SphereGeometry(0.25, 32, 32);
     
           // Add sphere to scene
       scene.add(smallestSphereMesh);
+    
+        // Keep track of the sphere's current scale
+        let scale = 1;
     
 // Create 50 Icosahedrons that orbit around the middle sphere
 const numIcosahedrons = 50;
@@ -381,7 +385,11 @@ renderer.setAnimationLoop(render);
 // Render the scene on each animation frame
 function animate() {
   requestAnimationFrame(animate);
-  
+                  // Update the sphere's scale using a sine wave
+            scale = 1 + 0.2 * Math.sin( Date.now() * 0.001 );
+
+            // Set the sphere's scale
+            smallestSphereMesh.scale.set( scale, scale, scale );
   // Rotate the camera around the origin if the mouse is being dragged
   if (isDragging) {
     const radiansPerPixel = 0.0005;
@@ -394,6 +402,8 @@ function animate() {
     
     camera.lookAt(scene.position);
   }
+  
+
   
   renderer.render(scene, camera);
 }
