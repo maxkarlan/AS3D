@@ -32,30 +32,7 @@
         const xr = navigator.xr;
 
       
-        // Make a new scene
-        let scene = new THREE.Scene();
-        // Set background color of the scene to gray
-        scene.background = new THREE.Color(0x505050);
-
-        // Make a camera. note that far is set to 100, which is better for realworld sized environments
-        let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 1.6, 3);
-        scene.add(camera);
-
-        // Add some lights
-        var light = new THREE.DirectionalLight(0xffffff,0.5);
-        light.position.set(1, 1, 1).normalize();
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0xffffff,0.5))
-
-        // Make a red cube
-        let cube = new THREE.Mesh(
-            new THREE.BoxBufferGeometry(1,1,1),
-            new THREE.MeshLambertMaterial({color:'red'})
-        );
-        cube.position.set(0, 1.5, -10);
-        scene.add(cube);
-
+       
         // Make a renderer that fills the screen
         let renderer = new THREE.WebGLRenderer({antialias: true});
         renderer.setPixelRatio(window.devicePixelRatio);
@@ -85,8 +62,6 @@
         }
 
         function render(time) {
-            // Rotate the cube
-            cube.rotation.y = time / 1000;
             // Draw everything
             renderer.render(scene, camera);
         }
@@ -429,30 +404,6 @@ document.addEventListener('mouseup', event => {
 function toRadians(angle) {
   return angle * (Math.PI / 180);
 }   
-    
-// Define a function to simulate collisions between spheres
-function simulateCollisions() {
-  for (let i = 0; i < spheres.length; i++) {
-    for (let j = i + 1; j < spheres.length; j++) {
-      const sphere1 = spheres[i];
-      const sphere2 = spheres[j];
-      const distance = sphere1.position.distanceTo(sphere2.position);
-      if (distance < 2) {
-        // The spheres are close enough to collide
-        const direction = new THREE.Vector3().subVectors(sphere2.position, sphere1.position).normalize();
-        const v1 = sphere1.velocity.clone().projectOnVector(direction);
-        const v2 = sphere2.velocity.clone().projectOnVector(direction);
-        const u1 = sphere1.velocity.clone().sub(v1).add(v2);
-        const u2 = sphere2.velocity.clone().sub(v2).add(v1);
-        sphere1.velocity.copy(u1);
-        sphere2.velocity.copy(u2);
-        sphere1.position.lerp(sphere1.position.clone().sub(direction), 0.5);
-        sphere2.position.lerp(sphere2.position.clone().add(direction), 0.5);
-      }
-    }
-  }
-}
-
 
 // Render the scene and update the cube positions on each frame
 function render() {
@@ -473,6 +424,12 @@ function render() {
   }
   renderer.render(scene, camera);
 }
+    
+renderer.setAnimationLoop(render);
+    
+document.getElementById('container').appendChild(renderer.domElement);
+// Add a button to enter/exit vr to the page
+document.body.appendChild(VRButton.createButton(renderer));
 
 window.addEventListener('resize', onWindowResize, false);
     
@@ -485,11 +442,7 @@ function onWindowResize() {
 
 
 
-renderer.setAnimationLoop(render);
-    
-document.getElementById('container').appendChild(renderer.domElement);
-// Add a button to enter/exit vr to the page
-document.body.appendChild(VRButton.createButton(renderer));
+
     
 // Render the scene on each animation frame
 function animate() {
