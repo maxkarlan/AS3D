@@ -13,6 +13,7 @@
 			width: 100vw;
 			height: 100vh;
 		}
+      
 	</style>
     </style>
     
@@ -20,7 +21,11 @@
     <script src="https://threejs.org/examples/js/vr/WebVR.js"></script>
     <script src="https://threejs.org/examples/js/vr/VREffect.js"></script>
     <script src="https://threejs.org/examples/js/vr/ViveController.js"></script>
-    <script type="x-shader/x-vertex" id="vertexShader">
+<script
+        import { VRButton } from 'https://unpkg.com/three/examples/jsm/webxr/VRButton.js';></script>
+
+    
+  <script type="x-shader/x-vertex" id="vertexShader">
       void main() {
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
       }
@@ -81,9 +86,11 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(5, 0, 0); // move camera outside the sphere on one side
 camera.lookAt(new THREE.Vector3(5, 0, 0)); // look at the center of the sphere
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true });        
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('container').appendChild(renderer.domElement);
+renderer.xr.enabled = true;
+
 // Create a light blue color for the sky
 const skyColor = new THREE.Color(0x87cefa);
 
@@ -170,7 +177,7 @@ for (let i = 0; i < numIcosahedrons; i++) {
   // Calculate a random longitude and latitude for the Icosahedron's orbit
   const longitude = Math.random() * Math.PI * 2;
   const latitude = Math.random() * Math.PI * 2;
-  const radius = .5;
+  const radius = 0.5;
   // Calculate the position of the Icosahedron on its orbit
   const x = radius * Math.sin(latitude) * Math.cos(longitude);
   const y = radius * Math.sin(latitude) * Math.sin(longitude);
@@ -213,6 +220,7 @@ for (let i = 0; i < 64; i++) {
 camera.position.set(0, 0, 1);
 camera.zoom = 0.5;
 camera.updateProjectionMatrix();
+
 
 // Create 100 cubes with initial position and velocity set based on random angles around the sphere
 let cubeGeometryIndex = 0;
@@ -268,6 +276,19 @@ setInterval(() => {
   });
 }, 3000);
     
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function render(time) {
+            // Rotate the cube
+            cube.rotation.y = time / 1000;
+            // Draw everything
+            renderer.render(scene, camera);
+        }
+    
 // Use the onBeforeRender event to update the cube positions
 function updateCubes() {
   cubes.forEach(cube => {
@@ -280,7 +301,7 @@ function updateCubes() {
       cube.userData.velocity.reflect(reflection);
     }
   });
-}
+}    
     
 // Animate the Perlin noise by updating the time uniform in the material
 function animate() {
@@ -384,16 +405,22 @@ function render() {
   renderer.render(scene, camera);
 }
 
+window.addEventListener('resize', onWindowResize, false);
+    
+    
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-window.addEventListener('resize', onWindowResize);
 
 
 renderer.setAnimationLoop(render);
+    
+document.getElementById('container').appendChild(renderer.domElement);
+// Add a button to enter/exit vr to the page
+document.body.appendChild(VRButton.createButton(renderer));
     
 // Render the scene on each animation frame
 function animate() {
