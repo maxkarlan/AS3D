@@ -23,74 +23,7 @@
     <script src="https://threejs.org/examples/js/vr/ViveController.js"></script>
     <script src="https://unpkg.com/three/examples/jsm/webxr/VRButton.js"></script>
     <script import { VRButton } from 'https://unpkg.com/three/examples/jsm/webxr/VRButton.js';></script>
- <script type="module">
-        // Import three
-        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
-        // Import the default VRButton
-        import { VRButton } from 'https://unpkg.com/three/examples/jsm/webxr/VRButton.js';
-
-        const xr = navigator.xr;
-
-      
-        // Make a new scene
-        let scene = new THREE.Scene();
-        // Set background color of the scene to gray
-        scene.background = new THREE.Color(0x505050);
-
-        // Make a camera. note that far is set to 100, which is better for realworld sized environments
-        let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 1.6, 3);
-        scene.add(camera);
-
-        // Add some lights
-        var light = new THREE.DirectionalLight(0xffffff,0.5);
-        light.position.set(1, 1, 1).normalize();
-        scene.add(light);
-        scene.add(new THREE.AmbientLight(0xffffff,0.5))
-
-        // Make a red cube
-        let cube = new THREE.Mesh(
-            new THREE.BoxBufferGeometry(1,1,1),
-            new THREE.MeshLambertMaterial({color:'red'})
-        );
-        cube.position.set(0, 1.5, -10);
-        scene.add(cube);
-
-        // Make a renderer that fills the screen
-        let renderer = new THREE.WebGLRenderer({antialias: true});
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        // Turn on VR support
-        renderer.xr.enabled = true;
-        // Set animation loop
-        renderer.setAnimationLoop(render);
-        // Add canvas to the page
-        document.body.appendChild(renderer.domElement);
-
-        // Add a button to enter/exit vr to the page
-        document.body.appendChild(VRButton.createButton(renderer));
-
-        // For AR instead, import ARButton at the top
-        //    import { ARButton } from 'https://unpkg.com/three/examples/jsm/webxr/ARButton.js';
-        // then create the button
-        //  document.body.appendChild(ARButton.createButton(renderer));
-
-        // Handle browser resize
-        window.addEventListener('resize', onWindowResize, false);
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function render(time) {
-            // Rotate the cube
-            cube.rotation.y = time / 1000;
-            // Draw everything
-            renderer.render(scene, camera);
-        }
-    </script>
+ 
     
   <script type="x-shader/x-vertex" id="vertexShader">
       void main() {
@@ -334,7 +267,6 @@ for (let i = 0; i < 50; i++) {
   cubes.push(cubeMesh);
   scene.add(cubeMesh);
 }
- 
 
 // Use a timer to change the shape of each cube every 3 seconds
 setInterval(() => {
@@ -371,23 +303,11 @@ function updateCubes() {
     }
   });
 }    
-    
-// Animate the Perlin noise by updating the time uniform in the material
-function animate() {
-  requestAnimationFrame(animate);
-  perlinMaterial.uniforms.time.value += 0.1;
-  renderer.render(scene, camera);
-      }
-    
+
 // Set the initial camera position and movement speed
 let xSpeed = 0;
 let zSpeed = 0;
 const movementSpeed = 0.1;
-    
-// Add collision detection to the scene
-document.addEventListener('collide', function(event) {
-  // event has details about the collision
-});
     
 // Add event listeners to make the camera rotate around the center when the user holds a click and drags the cursor
 let isDragging = false;
@@ -429,30 +349,6 @@ document.addEventListener('mouseup', event => {
 function toRadians(angle) {
   return angle * (Math.PI / 180);
 }   
-    
-// Define a function to simulate collisions between spheres
-function simulateCollisions() {
-  for (let i = 0; i < spheres.length; i++) {
-    for (let j = i + 1; j < spheres.length; j++) {
-      const sphere1 = spheres[i];
-      const sphere2 = spheres[j];
-      const distance = sphere1.position.distanceTo(sphere2.position);
-      if (distance < 2) {
-        // The spheres are close enough to collide
-        const direction = new THREE.Vector3().subVectors(sphere2.position, sphere1.position).normalize();
-        const v1 = sphere1.velocity.clone().projectOnVector(direction);
-        const v2 = sphere2.velocity.clone().projectOnVector(direction);
-        const u1 = sphere1.velocity.clone().sub(v1).add(v2);
-        const u2 = sphere2.velocity.clone().sub(v2).add(v1);
-        sphere1.velocity.copy(u1);
-        sphere2.velocity.copy(u2);
-        sphere1.position.lerp(sphere1.position.clone().sub(direction), 0.5);
-        sphere2.position.lerp(sphere2.position.clone().add(direction), 0.5);
-      }
-    }
-  }
-}
-
 
 // Render the scene and update the cube positions on each frame
 function render() {
@@ -519,5 +415,73 @@ function animate() {
 animate();
 
   </script>
+  <script type="module">
+        // Import three
+        import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+        // Import the default VRButton
+        import { VRButton } from 'https://unpkg.com/three/examples/jsm/webxr/VRButton.js';
+
+        const xr = navigator.xr;
+
+      
+        // Make a new scene
+        let scene = new THREE.Scene();
+        // Set background color of the scene to gray
+        scene.background = new THREE.Color(0x505050);
+
+        // Make a camera. note that far is set to 100, which is better for realworld sized environments
+        let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 1.6, 3);
+        scene.add(camera);
+
+        // Add some lights
+        var light = new THREE.DirectionalLight(0xffffff,0.5);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0xffffff,0.5))
+
+        // Make a red cube
+        let cube = new THREE.Mesh(
+            new THREE.BoxBufferGeometry(1,1,1),
+            new THREE.MeshLambertMaterial({color:'red'})
+        );
+        cube.position.set(0, 1.5, -10);
+        scene.add(cube);
+
+        // Make a renderer that fills the screen
+        let renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // Turn on VR support
+        renderer.xr.enabled = true;
+        // Set animation loop
+        renderer.setAnimationLoop(render);
+        // Add canvas to the page
+        document.body.appendChild(renderer.domElement);
+
+        // Add a button to enter/exit vr to the page
+        document.body.appendChild(VRButton.createButton(renderer));
+
+        // For AR instead, import ARButton at the top
+        //    import { ARButton } from 'https://unpkg.com/three/examples/jsm/webxr/ARButton.js';
+        // then create the button
+        //  document.body.appendChild(ARButton.createButton(renderer));
+
+        // Handle browser resize
+        window.addEventListener('resize', onWindowResize, false);
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function render(time) {
+            // Rotate the cube
+            cube.rotation.y = time / 1000;
+            // Draw everything
+            renderer.render(scene, camera);
+        }
+    </script>
 </body>
 </html>
