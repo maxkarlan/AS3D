@@ -378,6 +378,20 @@ function render() {
 
 window.addEventListener('resize', onWindowResize, false);
     
+document.addEventListener('keydown', onKeydown);
+
+function onKeydown(event) {
+  if (event.key === 'f' || event.key === 'F') {
+    if (document.fullscreenElement) {
+      // Exit fullscreen
+      document.exitFullscreen();
+    } else {
+      // Enter fullscreen
+      document.documentElement.requestFullscreen();
+    }
+  }
+}
+    
     
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
